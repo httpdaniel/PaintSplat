@@ -54,7 +54,7 @@ public class GetSocket
         byte[] valueByte = BitConverter.GetBytes(value);
         if (BitConverter.IsLittleEndian)
             Array.Reverse(valueByte);
-        byte[] valueByteRes = numPlayers;
+        byte[] valueByteRes = valueByte;
         
         return valueByteRes;
     }
@@ -75,13 +75,13 @@ public class GetSocket
         
         for (int i = 0; i < bytestype.Length; i++)
         {
-            bytesDataTosend[index] = bytesuName[i];
+            bytesDataTosend[index] = bytestype[i];
             index += 1;
         }
 
         for (int i = 0; i < bytesuLen.Length; i++)
         {
-            bytesDataTosend[index] = bytesuName[i];
+            bytesDataTosend[index] = bytesuLen[i];
             index += 1;
         }
 
@@ -93,7 +93,7 @@ public class GetSocket
 
         for (int i = 0; i < bytesPNum.Length; i++)
         {
-            bytesDataTosend[index] = bytesuName[i];
+            bytesDataTosend[index] = bytesPNum[i];
             index += 1;
         }
         //bytesDataTosend[-1] = numberOfPlayers;
@@ -129,7 +129,7 @@ public class GetSocket
             host = Dns.GetHostName();
         else
             host = args[0];
-        socketObj = GetSocket(host, port);
+        GetSocket socketObj = new  GetSocket(host, port);
 
         // string result = SocketSendReceive(host, port);
         //Console.WriteLine(result);
