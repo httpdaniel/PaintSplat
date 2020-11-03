@@ -3,6 +3,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 public class GetSocket
 {
@@ -49,9 +50,56 @@ public class GetSocket
         return s;
     }
 
-    private void createLobby(string username, int numberOfPlayers) { 
-    // function is used to initialise the handshake with the server and then create a lobby
+    private byte[] changeIntToByteArray(int value) {
+        byte[] valueByte = BitConverter.GetBytes(value);
+        if (BitConverter.IsLittleEndian)
+            Array.Reverse(valueByte);
+        byte[] valueByteRes = numPlayers;
+        
+        return valueByteRes;
+    }
     
+    private void createLobby(string username, int numberOfPlayers) {
+        // function is used to initialise the handshake with the server and then create a lobby
+        Console.WriteLine("Creating the lobby !");
+        int lengthUname = username.Length;
+        Byte[] bytesuName = Encoding.ASCII.GetBytes(username); // converting uname to bytes
+        Byte[] bytesuLen = changeIntToByteArray(lengthUname);
+        Byte[] bytesPNum = changeIntToByteArray(numberOfPlayers);
+        Byte[] bytestype = changeIntToByteArray(0);
+
+        int LengthOfArray = bytesuName.Length+bytesuLen.Length+bytesPNum.Length+bytestype.Length; 
+        
+        var bytesDataTosend = new byte[LengthOfArray];
+        int index = 0; 
+        
+        for (int i = 0; i < bytestype.Length; i++)
+        {
+            bytesDataTosend[index] = bytesuName[i];
+            index += 1;
+        }
+
+        for (int i = 0; i < bytesuLen.Length; i++)
+        {
+            bytesDataTosend[index] = bytesuName[i];
+            index += 1;
+        }
+
+        for (int i = 0; i < bytesuName.Length; i++)
+        {
+            bytesDataTosend[index] = bytesuName[i];
+            index += 1;
+        }
+
+        for (int i = 0; i < bytesPNum.Length; i++)
+        {
+            bytesDataTosend[index] = bytesuName[i];
+            index += 1;
+        }
+        //bytesDataTosend[-1] = numberOfPlayers;
+        Console.WriteLine("Sending the data to server for creating the lobby !");
+        sendData(bytesDataTosend, new byte[10]);
+        Console.WriteLine("Received the data from server for creating the lobby!");
     }
 
     private void sendData(Byte[] bytesSent, Byte[] bytesRec) {
@@ -81,8 +129,9 @@ public class GetSocket
             host = Dns.GetHostName();
         else
             host = args[0];
+        socketObj = GetSocket(host, port);
 
         // string result = SocketSendReceive(host, port);
-        Console.WriteLine(result);
+        //Console.WriteLine(result);
     }
 }
