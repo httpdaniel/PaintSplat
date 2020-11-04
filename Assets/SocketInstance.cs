@@ -15,39 +15,24 @@ public class GetSocket
     {
         serverHostName = hostName;
         serverPort = port;
-        socket = ConnectSocket();
+        socket = connectSocket();
     }
 
-    private Socket ConnectSocket()
+    private Socket connectSocket()
     {
-        Socket s = null;
-        IPHostEntry hostEntry = null;
-
-        // Get host related information.
-        hostEntry = Dns.GetHostEntry(serverHostName);
-
-        // Loop through the AddressList to obtain the supported AddressFamily. This is to avoid
-        // an exception that occurs when the host IP Address is not compatible with the address family
-        // (typical in the IPv6 case).
-        foreach (IPAddress address in hostEntry.AddressList)
+        IPAddress host = IPAddress.Parse(serverHostName);//  
+        IPEndPoint ipendpoint = new IPEndPoint(host, serverPort); // assign host and port                                                               
+        Socket tempSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        try
         {
-            IPEndPoint ipe = new IPEndPoint(address, serverPort);
-            Socket tempSocket =
-                new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            tempSocket.Connect(ipe);
-
-            if (tempSocket.Connected)
-            {
-                s = tempSocket;
-                break;
-            }
-            else
-            {
-                continue;
-            }
+            tempSocket.Connect(ipendpoint);
         }
-        return s;
+        catch (SocketException e)
+        {
+            //MessageBox.Show(e.Message);
+            tempSocket.Close();
+        }
+        return tempSocket;
     }
 
     private byte[] changeIntToByteArray(int value) {
@@ -59,7 +44,7 @@ public class GetSocket
         return valueByteRes;
     }
     
-    private void createLobby(string username, int numberOfPlayers) {
+    public void createLobby(string username, int numberOfPlayers) {
         // function is used to initialise the handshake with the server and then create a lobby
         Console.WriteLine("Creating the lobby !");
         int lengthUname = username.Length;
@@ -120,8 +105,8 @@ public class GetSocket
 
     public static void Main(string[] args)
     {
-        string host;
-        int port = 80;
+        string host="localhost";
+        int port = 10500;
 
         if (args.Length == 0)
             // If no server name is passed as argument to this program,
@@ -129,8 +114,8 @@ public class GetSocket
             host = Dns.GetHostName();
         else
             host = args[0];
-        GetSocket socketObj = new  GetSocket(host, port);
-
+        //GetSocket socketObj = new  GetSocket(host, port);
+        //socketObj.ConnectSocket();
         // string result = SocketSendReceive(host, port);
         //Console.WriteLine(result);
     }
