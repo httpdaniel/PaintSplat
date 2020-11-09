@@ -58,53 +58,6 @@ public class GetSocket
     public List<object> createLobby(string username, int numberOfPlayers) {
         // function is used to initialise the handshake with the server and then create a lobby
         Console.WriteLine("Creating the lobby !");
-        int lengthUname = username.Length;
-        int typeOfPacket = SocketConstants.CL_CREATE_GAME;
-        //Console.WriteLine(typeOfPacket);
-        Console.WriteLine(typeOfPacket);
-        Byte[] bytesuName = Encoding.ASCII.GetBytes(username); // converting uname to bytes
-        Byte[] bytesuLen = changeIntToByteArray(lengthUname);
-        Byte[] bytesPNum = changeIntToByteArray(numberOfPlayers);
-        Byte[] bytestype = changeIntToByteArray(typeOfPacket);
-
-        int LengthOfArray = bytesuName.Length+bytesuLen.Length+bytesPNum.Length+bytestype.Length; 
-        
-        var bytesDataTosend = new byte[LengthOfArray];
-        int index = 0; 
-        
-        for (int i = 0; i < bytestype.Length; i++)
-        {
-            bytesDataTosend[index] = bytestype[i];
-            index += 1;
-        }
-
-        for (int i = 0; i < bytesuLen.Length; i++)
-        {
-            bytesDataTosend[index] = bytesuLen[i];
-            index += 1;
-        }
-
-        for (int i = 0; i < bytesuName.Length; i++)
-        {
-            bytesDataTosend[index] = bytesuName[i];
-            index += 1;
-        }
-
-        for (int i = 0; i < bytesPNum.Length; i++)
-        {
-            bytesDataTosend[index] = bytesPNum[i];
-            index += 1;
-        }
-        //bytesDataTosend[-1] = numberOfPlayers;
-        Console.WriteLine("Sending the data to server for creating the lobby !");
-        List<object> result = sendData(bytesDataTosend);
-        Console.WriteLine("Received the data from server for creating the lobby!");
-        return result;
-    }
-
-    public List<object> createLobbySimple(string username, int numberOfPlayers) {
-        // function is used to initialise the handshake with the server and then create a lobby
-        Console.WriteLine("Creating the lobby !");
         int typeOfPacketInt = SocketConstants.CL_CREATE_GAME;
         int lengthUname = username.Length;
         Byte[] bytesuName = Encoding.ASCII.GetBytes(username); // converting uname to bytes

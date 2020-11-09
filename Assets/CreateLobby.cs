@@ -17,7 +17,7 @@ public class CreateLobby : MonoBehaviour
         GetSocket socketObj = SocketFactory.getSocketForApp("127.0.0.1", 10500);
         //GetSocket socketObj = new GetSocket("127.0.0.1", 10500);
         Debug.Log("Creating the lobby");
-        List<object> result = socketObj.createLobbySimple(username.text, Int16.Parse(maxplayer.text));
+        List<object> result = socketObj.createLobby(username.text, Int16.Parse(maxplayer.text));
         int success = (int)result[0];
         int acceptCode = SocketConstants.SE_ROOM_CODE;
         Debug.Log(acceptCode);
