@@ -42,12 +42,12 @@ public class Joystick : MonoBehaviour
                     break;
 
                 case TouchPhase.Stationary:
-                    moveDuck();
+                    moveTarget();
 
                     break;
 
                 case TouchPhase.Moved:
-                    moveDuck();
+                    moveTarget();
 
                     break;
 
@@ -63,7 +63,7 @@ public class Joystick : MonoBehaviour
 
     }
 
-    private void moveDuck()
+    private void moveTarget()
     {
         innercircle.transform.position = touchPosition;
 

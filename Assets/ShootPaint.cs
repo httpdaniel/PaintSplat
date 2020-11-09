@@ -7,6 +7,12 @@ public class ShootPaint : MonoBehaviour
 {
     public int hitCounter;
     public Text scoreText;
+    [SerializeField] public Transform pfSplat;
+    public Rigidbody2D rb;
+
+    private void awake() {
+        //GetComponent<Button>().onClick() += firePaint;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -24,5 +30,9 @@ public class ShootPaint : MonoBehaviour
         {
             hitCounter++;
         }
+    }
+
+    public void firePaint(){
+        Instantiate(pfSplat, new Vector2(rb.transform.localPosition.x, rb.transform.localPosition.y), Quaternion.identity);
     }
 }
