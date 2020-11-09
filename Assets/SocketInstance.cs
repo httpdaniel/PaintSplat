@@ -87,6 +87,36 @@ public class GetSocket
         Console.WriteLine("Received the data from server for creating the lobby!");
     }
 
+    public void sendLobbyCode(string lobbycode)
+    {
+        // function is used to initialise the handshake with the server and then create a lobby
+        Console.WriteLine("Joining the lobby !");
+        int lengthlobbyCode = lobbycode.Length;
+        Byte[] bytesLcode = Encoding.ASCII.GetBytes(username); // converting uname to bytes
+        Byte[] bytestype = changeIntToByteArray(0);
+
+        int LengthOfArray = bytesLcode.Length  + bytestype.Length;
+
+        var bytesDataTosend = new byte[LengthOfArray];
+        int index = 0;
+
+        for (int i = 0; i < bytestype.Length; i++)
+        {
+            bytesDataTosend[index] = bytestype[i];
+            index += 1;
+        }
+
+        for (int i = 0; i < bytesLcode.Length; i++)
+        {
+            bytesDataTosend[index] = bytesuLen[i];
+            index += 1;
+        }
+        //bytesDataTosend[-1] = numberOfPlayers;
+        Console.WriteLine("Sending the data to server for creating the lobby !");
+        sendData(bytesDataTosend, new byte[10]);
+        Console.WriteLine("Received the data from server for creating the lobby!");
+    }
+
     private void sendData(Byte[] bytesSent, Byte[] bytesRec) {
         /*
          this is the helper method to send the data over to the server and the port.
