@@ -135,6 +135,81 @@ public class GetSocket
         }
     }
 
+    public List<object> recieveInPlayerInformation(){
+        //SE_PLAYER_JOIN
+        int packetNum = 0;
+        int bytes = 0;
+        int playerNameLength = -1;
+        List<object> result = new List<object>();
+        String uNameRec;
+        Byte[] bytesRec;
+        do
+        {   if (packetNum == 0)
+            {
+                bytesRec = new byte[4];
+                bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                // first packet is always int
+                int flagNum = BitConverter.ToInt32(bytesRec, 0);
+                if (flagNum == SocketConstants.SE_PLAYER_JOIN){
+                    continue;
+                }
+                else{
+                    break;
+                }
+            }
+            else if (packetNum%2 == 0){
+                // we will get playername length
+                bytesRec = new byte[4];
+                bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                // first packet is always int
+                playerNameLength = BitConverter.ToInt32(bytesRec, 0);
+            }
+            else{
+                //we will get user name
+                if (playerNameLength >0){
+                    bytesRec = new byte[playerNameLength];
+                    bytes = socket.Receive(bytesRec, playerNameLength, 0); // recieve one packet at a time
+                    // first packet is always int
+                    uNameRec = Encoding.ASCII.GetString(bytes,0,bytesRec));
+                    result.Add(uNameRec);
+                    playerNameLength = -1;
+                }
+            }
+        }
+        while (bytes >0); // listen till we are getting the bytes.
+        return result;
+    }
+
+
+    public List<object> recieveInGamePositionData(){
+        packetNum = 0;
+        int bytes = 0;
+        List<object> result = new List<object>();
+        do
+        {   if (packetNum == 0)
+            {
+                Byte[] bytesRec = new byte[4];
+                bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                // first packet is always int
+                int flagNum = BitConverter.ToInt32(bytesRec, 0);
+                if (flagNum == SocketConstants.SE_PAINT_BALL_SYNC){
+                    continue;
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                Byte[] bytesRec = new byte[4];
+                bytes = socket.Receive(bytesRec, 4, 0);
+                float point = System.BitConverter.ToSingle(bytesRec, 0);
+                result.Add(point);
+            }
+        }
+        while (bytes >0); // listen till we are getting the bytes.
+        return result;
+    }
+
     private List<object> sendData(Byte[] bytesSent) {
         /*
          this is the helper method to send the data over to the server and the port.
