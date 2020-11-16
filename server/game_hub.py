@@ -1,6 +1,5 @@
 from multiprocessing import Pipe
 from random import choice
-import asyncio
 from uuid import uuid4
 import selectors
 from packets.game_packet import *

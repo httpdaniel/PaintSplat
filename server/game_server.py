@@ -45,14 +45,14 @@ class GameServer:
 
     def run(self):
         # Open socket
-        server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_sock.bind(('0.0.0.0', PORT))
-        server_sock.listen(CONN_BACKLOG)
+        self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_sock.bind(('0.0.0.0', PORT))
+        self.server_sock.listen(CONN_BACKLOG)
 
         # Wait for connections
         while True:
             # Accept connection
-            client_sock, client_address = server_sock.accept()
+            client_sock, client_address = self.server_sock.accept()
             print("Incoming connection")
             # Send connection to other thread
             handshake_thread = Thread(target = self.handshake,
