@@ -5,7 +5,9 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
-
+using System.Collections;
+using UnityEngine;
+using System.Threading;
 public class GetSocket
 {
 
@@ -17,6 +19,7 @@ public class GetSocket
         serverHostName = hostName;
         serverPort = port;
         socket = connectSocket();
+        socket.ReceiveTimeout = 1000;
     }
     // method to connect the socket to the host name and the port
     private Socket connectSocket()
@@ -55,34 +58,57 @@ public class GetSocket
         return myFloat;
     }
 
-    public List<object> createLobby(string username, int numberOfPlayers) {
+    public List<object> createLobby(string userName, int numberOfPlayers, int maxGameLength, int splashSize) {
         // function is used to initialise the handshake with the server and then create a lobby
-        Console.WriteLine("Creating the lobby !");
+        //Console.WriteLine("Creating the lobby !");
         int typeOfPacketInt = SocketConstants.CL_CREATE_GAME;
-        int lengthUname = username.Length;
-        Byte[] bytesuName = Encoding.ASCII.GetBytes(username); // converting uname to bytes
-        byte uLength = (byte) lengthUname;
         byte pNum = (byte) numberOfPlayers;
         byte typeOfPacket = (byte) typeOfPacketInt;
+        byte maxGameLengthB = (byte) maxGameLength;
+        byte splashSizeB = (byte) splashSize;
 
-        int LengthOfArray = bytesuName.Length+3; 
+        int LengthOfArray = 4; 
         
         var bytesDataTosend = new byte[LengthOfArray];
         
         bytesDataTosend[0] = typeOfPacket;
-        bytesDataTosend[1] = uLength;
-        int index = 2; 
-        for (int i = 0; i < bytesuName.Length; i++)
+        bytesDataTosend[1] = pNum;
+        bytesDataTosend[2] = maxGameLengthB;
+        bytesDataTosend[3] = splashSizeB;
+        List<object> result = sendLobbyData(bytesDataTosend);
+        int success = (int)result[0];
+        if (success == SocketConstants.SE_ROOM_CODE){
+            System.Diagnostics.Debug.WriteLine(result[1]);
+            sendUserName(userName);
+        }
+
+        //bytesDataTosend[-1] = numberOfPlayers;
+        //Console.WriteLine("Sending the data to server for creating the lobby !");
+        
+        // Console.WriteLine("Received the data from server for creating the lobby!");
+        return result;
+    }
+
+    public void sendUserName(String userName){
+        int lengthUName = userName.Length;            
+        int dataTypeToSend  = SocketConstants.CL_SEND_USERNAME;// converting lobby to bytes
+        
+        Byte[] bytesUname   = Encoding.ASCII.GetBytes(userName);
+        byte typeOfPacket = (byte) dataTypeToSend;
+        byte bytesULen = (byte)lengthUName;
+
+        int LengthOfArray = bytesUname.Length  + 2;
+        var bytesDataTosend = new byte[LengthOfArray];
+        bytesDataTosend[0] = typeOfPacket;
+        bytesDataTosend[1] = bytesULen;
+        int index = 2;
+        for (int i = 0; i < bytesUname.Length; i++)
         {
-            bytesDataTosend[index] = bytesuName[i];
+            bytesDataTosend[index] = bytesUname[i];
             index += 1;
         }
-        bytesDataTosend[index] = pNum;
-        //bytesDataTosend[-1] = numberOfPlayers;
-        Console.WriteLine("Sending the data to server for creating the lobby !");
-        List<object> result = sendData(bytesDataTosend);
-        Console.WriteLine("Received the data from server for creating the lobby!");
-        return result;
+        sendUserNameLobbyCreator(bytesDataTosend);
+        // return resultAddUserToLobby;    
     }
 
     public List<object> sendLobbyCode(string lobbycode,string userName)
@@ -105,34 +131,16 @@ public class GetSocket
         }
         Console.WriteLine("Sending the data to server for creating the lobby !");
 
-        List <object> resultLobbyFound = sendData(bytesDataTosend);
+        List <object> resultLobbyFound = sendJoinLobbyData(bytesDataTosend);
         Console.WriteLine("Received the data from server for creating the lobby!");
-        int statusLobbyFound = (int) resultLobbyFound[0];
+        List<int> lobbyInfo = (List<int>) resultLobbyFound[0];
+        int statusLobbyFound = (int)lobbyInfo[0];
         if (statusLobbyFound == SocketConstants.SE_ROOM_OK) {
             // send username and join game.
-            int lengthUName = userName.Length;            
-            dataTypeToSend  = SocketConstants.CL_SEND_USERNAME;// converting lobby to bytes
-            
-            Byte[] bytesUname   = Encoding.ASCII.GetBytes(userName);
-            typeOfPacket = (byte) dataTypeToSend;
-            byte bytesULen = (byte)lengthUName;
-
-            LengthOfArray = bytesUname.Length  + 2;
-            bytesDataTosend = new byte[LengthOfArray];
-            bytesDataTosend[0] = typeOfPacket;
-            bytesDataTosend[1] = bytesULen;
-            index = 2;
-            for (int i = 0; i < bytesUname.Length; i++)
-            {
-                bytesDataTosend[index] = bytesUname[i];
-                index += 1;
-            }
-            List <object> resultAddUserToLobby = sendData(bytesDataTosend);
-            return resultAddUserToLobby;
+            UnityEngine.Debug.Log("Send the user data");
+            // sendUserName(userName);
         }
-        else{
             return resultLobbyFound;
-        }
     }
 
     public List<object> recieveInPlayerInformation(){
@@ -210,6 +218,129 @@ public class GetSocket
         return result;
     }
 
+    private List<object> sendLobbyData(Byte[] bytesSent) {
+        /*
+         this is the helper method to send the data over to the server and the port.
+         the answer to the request will be stored in the bytesRec and bytesSend are the bytes that needs to be sent to the server
+        */
+        socket.Send(bytesSent, bytesSent.Length, 0);
+        UnityEngine.Debug.Log("Send the daata");
+        List<object> result = new List<object>();
+        int bytes = 0;
+        int packetNum = 0;
+
+        do
+        {
+            /*
+            Below is the logic to receive the data. We everytime recieve only one packet at a time.
+            First packet is always the state.
+            and the packets following are the values.
+            */
+            UnityEngine.Debug.Log(packetNum);
+            if (packetNum == 0){
+                Byte[] bytesRec = new byte[4];
+                bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                int flagNum = BitConverter.ToInt32(bytesRec, 0);
+                result.Add(flagNum);
+            }
+            else{
+                Byte[] bytesRec = new byte[5];
+                bytes = socket.Receive(bytesRec, 5, 0);
+                var lobbyCode = Encoding.UTF8.GetString(bytesRec, 0, bytesRec.Length);
+                result.Add(lobbyCode);
+            }
+            packetNum += 1;
+        }
+        while (packetNum <= 1);
+        
+        return result;
+    }
+
+
+    private List<object> sendJoinLobbyData(Byte[] bytesSent) {
+        /*
+         this is the helper method to send the data over to the server and the port.
+         the answer to the request will be stored in the bytesRec and bytesSend are the bytes that needs to be sent to the server
+        */
+        /*
+        9|max_players|game_length|splash_size|number_of_players|[uuid[32]|name_length|name[name_length]]
+        player = 
+        
+        */
+        socket.Send(bytesSent, bytesSent.Length, 0);
+        // Thread.Sleep(2000);
+        UnityEngine.Debug.Log("Send the daata");
+        List<object> result = new List<object>();
+        int bytes = 0;
+        int packetNum = 0;
+        Byte[] bytesRec ;
+        Byte[] playerUname;
+        int playerNameLength ;
+        int numPlayersInLobby =0;
+        List <int> gameInfo = new List <int>();
+        do
+        {
+            /*
+            Below is the logic to receive the data. We everytime recieve only one packet at a time.
+            First packet is always the state.
+            and the packets following are the values.
+            */
+            // UnityEngine.Debug.Log(packetNum);
+            if (packetNum < 5){
+                bytesRec = new byte[1];
+                bytes = socket.Receive(bytesRec, 1, 0); // recieve one packet at a time
+                // UnityEngine.Debug.Log("Getting user info2");
+                int intDataRec = (int)bytesRec[0];
+                gameInfo.Add(intDataRec);
+                if (packetNum == 4){
+                    numPlayersInLobby = intDataRec;
+                    UnityEngine.Debug.Log(numPlayersInLobby);
+                }
+                // int flagNum = (int)bytesRec[0];
+                // int maxPlayers = (int)bytesRec[1];
+                // int gameLength = (int)bytesRec[2];
+                // int splashSize = (int)bytesRec[3];
+                // numPlayersInLobby = (int)bytesRec[4];
+                // foreach(var p in bytesRec) {
+            
+                //         UnityEngine.Debug.Log(p);
+               
+                //     }
+                
+                // gameInfo.Add(flagNum);
+                // gameInfo.Add(maxPlayers);
+                // gameInfo.Add(gameLength);
+                // gameInfo.Add(splashSize);
+                // gameInfo.Add(numPlayersInLobby);
+                // result.Add(gameInfo);
+            }
+            else{
+                result.Add(gameInfo);
+                UnityEngine.Debug.Log("Getting user info");
+                // numPlayersInLobby = gameInfo[4];
+                // recieve each playerInfo
+                bytesRec = new byte[33];
+                bytes = socket.Receive(bytesRec, 33, 0); // recieve one packet at a time
+                // UnityEngine.Debug.Log(bytesRec);
+                playerNameLength = (int)bytesRec[32];
+                playerUname = new byte[playerNameLength];
+                bytes = socket.Receive(playerUname, playerNameLength, 0);
+                var playerUnameStr = Encoding.UTF8.GetString(playerUname, 0, playerUname.Length);
+                // UnityEngine.Debug.Log(playerUnameStr);
+                // UnityEngine.Debug.Log(playerNameLength);
+                List <object> playerInfo = new List <object>();
+                playerInfo.Add(bytesRec);
+                playerInfo.Add(playerUnameStr);
+                result.Add(playerInfo);
+            }
+            packetNum += 1;
+        }
+        while (packetNum < numPlayersInLobby +4);
+        
+        return result;
+    }
+
+
     private List<object> sendData(Byte[] bytesSent) {
         /*
          this is the helper method to send the data over to the server and the port.
@@ -235,8 +366,8 @@ public class GetSocket
                 result.Add(flagNum);
             }
             else{
-                Byte[] bytesRec = new byte[4];
-                bytes = socket.Receive(bytesRec, 4, 0);
+                Byte[] bytesRec = new byte[5];
+                bytes = socket.Receive(bytesRec, 5, 0);
                 float point = System.BitConverter.ToSingle(bytesRec, 0);
                 result.Add(point);
             }
@@ -244,6 +375,22 @@ public class GetSocket
         while (bytes > 0);
         
         return result;
+    }
+    private void sendUserNameLobbyCreator(Byte[] bytesSent) {
+        /*
+         this is the helper method to send the data over to the server and the port.
+         the answer to the request will be stored in the bytesRec and bytesSend are the bytes that needs to be sent to the server
+        */
+        socket.Send(bytesSent, bytesSent.Length, 0);
+    }
+
+    public void startPainting(){
+        int dataTypeToSend  = SocketConstants.SE_START_REQUEST;
+        byte typeOfPacket = (byte) dataTypeToSend;
+        int LengthOfArray = 1;
+        var bytesDataTosend = new byte[LengthOfArray];
+        bytesDataTosend[0] = typeOfPacket;
+        socket.Send(bytesDataTosend, bytesDataTosend.Length, 0);
     }
 
     public static void Main(string[] args)

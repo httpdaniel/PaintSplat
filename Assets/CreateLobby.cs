@@ -12,23 +12,32 @@ public class CreateLobby : MonoBehaviour
 {
     public TMP_InputField username;
     public TMP_InputField maxplayer;
+    public TMP_InputField maxGameLength;
+    public TMP_InputField splashSize;
+    public GameObject currentScene;
+    public GameObject nextScene;
+
     public void createLobby()
     {
-        // GetSocket socketObj = SocketFactory.getSocketForApp(SocketConstants.SERVER_HOST, SocketConstants.SERVER_PORT);
-        //GetSocket socketObj = new GetSocket("127.0.0.1", 10500);
+        GetSocket socketObj = SocketFactory.getSocketForApp(SocketConstants.SERVER_HOST, SocketConstants.SERVER_PORT);
         Debug.Log("Creating the lobby");
-        // List<object> result = socketObj.createLobby(username.text, Int16.Parse(maxplayer.text));
-        // int success = (int)result[0];
-        int success = SocketConstants.SE_ROOM_CODE;
+        List<object> result = socketObj.createLobby(username.text, Int16.Parse(maxplayer.text), Int16.Parse(maxGameLength.text),Int16.Parse(splashSize.text));
+        int success = (int)result[0];
+        // int success = SocketConstants.SE_ROOM_CODE;
         int acceptCode = SocketConstants.SE_ROOM_CODE;
         Debug.Log(acceptCode);
         //bool status = true; // take this variable from the server
-        if (success == SocketConstants.SE_ROOM_CODE)
+        if (success == SocketConstants.SE_ROOM_OK)
         {
-            Debug.Log("User name"+username.text);
-            Debug.Log("max Players"+maxplayer.text);
+            Debug.Log("Got the success");
+            //Debug.Log("User name"+username.text);
+            //Debug.Log("max Players"+maxplayer.text);
             //start game screen
-            SceneLoader.loadIt("playerQueue");
+            GameState.setIscreater(1);
+            GameState.setLobbyCode((string)result[1]);
+            GameState.setUserName(username.text);
+            currentScene.SetActive(false);
+            nextScene.SetActive(true);
             Debug.Log("Starting game");
         }
         else{

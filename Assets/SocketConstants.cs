@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SocketConstants
 {
-    public static string SERVER_HOST      = "127.0.0.1";
+    public static string SERVER_HOST      = "3.127.170.185";
     public static int SERVER_PORT         = 10500;
     public static int CL_CREATE_GAME      = 0; //# Sent by the player who creates the game
     public static int CL_JOIN_GAME        = 1; //# Sent by a player who wants to join a game
