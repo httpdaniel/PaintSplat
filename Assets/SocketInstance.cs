@@ -170,8 +170,8 @@ public class GetSocket
                     bytesRec = new byte[playerNameLength];
                     bytes = socket.Receive(bytesRec, playerNameLength, 0); // recieve one packet at a time
                     // first packet is always int
-                    uNameRec = Encoding.ASCII.GetString(bytes,0,bytesRec));
-                    result.Add(uNameRec);
+                    // uNameRec = Encoding.ASCII.GetString(bytes,0,bytesRec);
+                    //result.Add(uNameRec);
                     playerNameLength = -1;
                 }
             }
@@ -182,7 +182,7 @@ public class GetSocket
 
 
     public List<object> recieveInGamePositionData(){
-        packetNum = 0;
+        int packetNum = 0;
         int bytes = 0;
         List<object> result = new List<object>();
         do

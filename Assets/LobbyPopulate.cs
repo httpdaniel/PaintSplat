@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System;
 
@@ -13,10 +14,10 @@ public class LobbyPopulate : MonoBehaviour
         GameObject g;
         String s;
         for (int i =0; i<5;i++){
-            g = Instantiate(lobbyMemTemplate,transform);
-            // s = i.ToString();
-            //Debug.Log(s);
-            // g.transform.GetChild(0).GetComponent <TMP_InputField>().text= s;
+            g = Instantiate(lobbyMemTemplate,transform) as GameObject;
+            s = i.ToString();
+            // Debug.Log();
+            g.transform.Find("Text").GetComponent <TMP_Text>().text= s;
         }
         Destroy(lobbyMemTemplate);
     }
