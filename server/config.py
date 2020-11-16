@@ -1,0 +1,2 @@
+CODE_LEN = 5
+ENDIANNESS = 'little'

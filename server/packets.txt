@@ -1,0 +1,20 @@
+# Create
+b'x\00'
+# Join
+b'x\01CODEE'
+# Error code not found
+b'x\02'
+# Room welcome
+b'x\03'
+# Name (namelen, name)
+b'x\04x\08NAMENAME'
+# Leave
+b'x\05'
+# Server bye
+b'x\06'
+# Single player info (color, id)
+b'x\07x\255x\02'
+# New player (color, ide, namelen, name)
+b'x\08x\255x\02x\08NAMENAME'
+# Begin
+b'x\09'
