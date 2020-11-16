@@ -14,11 +14,12 @@ public class CreateLobby : MonoBehaviour
     public TMP_InputField maxplayer;
     public void createLobby()
     {
-        GetSocket socketObj = SocketFactory.getSocketForApp("127.0.0.1", 10500);
+        // GetSocket socketObj = SocketFactory.getSocketForApp(SocketConstants.SERVER_HOST, SocketConstants.SERVER_PORT);
         //GetSocket socketObj = new GetSocket("127.0.0.1", 10500);
         Debug.Log("Creating the lobby");
-        List<object> result = socketObj.createLobby(username.text, Int16.Parse(maxplayer.text));
-        int success = (int)result[0];
+        // List<object> result = socketObj.createLobby(username.text, Int16.Parse(maxplayer.text));
+        // int success = (int)result[0];
+        int success = SocketConstants.SE_ROOM_CODE;
         int acceptCode = SocketConstants.SE_ROOM_CODE;
         Debug.Log(acceptCode);
         //bool status = true; // take this variable from the server
@@ -27,6 +28,7 @@ public class CreateLobby : MonoBehaviour
             Debug.Log("User name"+username.text);
             Debug.Log("max Players"+maxplayer.text);
             //start game screen
+            SceneLoader.loadIt("playerQueue");
             Debug.Log("Starting game");
         }
         else{

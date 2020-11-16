@@ -9,7 +9,7 @@ public class JoinLobby : MonoBehaviour
 
     public void join()
     {
-        GetSocket socketObj = SocketFactory.getSocketForApp("127.0.0.1", 10500);
+        GetSocket socketObj = SocketFactory.getSocketForApp(SocketConstants.SERVER_HOST, SocketConstants.SERVER_PORT);
         List<object> result = socketObj.sendLobbyCode(lobbyCode.text, username.text);
         int response = (int)result[0];
         if (response == SocketConstants.SE_PLAYER_JOIN){
