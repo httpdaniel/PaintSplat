@@ -19,13 +19,14 @@ class GameServer:
         # Get packet
         packet = GamePacket.recv(client)
         # Respond to packet
+        # print(packet)
         if type(packet) is CreateGamePacket:
             print("PACKET: Create Game")
             # Delegate to GameHub object
             new_hub = GameHub(self.game_list, packet)
             # Create process for Game Hub
             Process(target=new_hub.run).start()
-        elif packet is JoinGamePacket:
+        elif type(packet) is JoinGamePacket:
             print("PACKET: Join Game")
             # Check code
             game_hub = self.game_list.find(packet.code.decode('ascii'))
