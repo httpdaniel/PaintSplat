@@ -26,6 +26,7 @@ public class LobbyPopulate : MonoBehaviour
         // hack to write the username
         GameObject lobbyMemTemplate = transform.GetChild(0).gameObject;
         GameObject g;
+        startButton.onClick.AddListener(onclickStart);
         for (int i =0; i<1;i++){
             g = Instantiate(lobbyMemTemplate,transform) as GameObject;
             // s = i.ToString();
@@ -34,8 +35,8 @@ public class LobbyPopulate : MonoBehaviour
         }
         Destroy(lobbyMemTemplate);
     }
-    void onclickStart(){
-        socket.startPainting();
+    public void onclickStart(){
+        socketObj.startPainting();
     }
     // Update is called once per frame
     // void Update()
