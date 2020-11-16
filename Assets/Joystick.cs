@@ -11,6 +11,7 @@ public class Joystick : MonoBehaviour
     private Vector2 touchPosition;
     private Vector2 moveDirection;
     private Vector2 location;
+    private float minX, maxX, minY, maxY;
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +21,13 @@ public class Joystick : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         // Speed to move crosshair
-        moveSpeed = 6f;
+        moveSpeed = 9f;
+
+        // set boundaries
+        minX = -8.463f;
+        maxX = 8.463f;
+        minY = -4.58f;
+        maxY = 4.58f;
 
     }
 
@@ -59,6 +66,17 @@ public class Joystick : MonoBehaviour
 
                     break;
             }
+        }
+
+        // prevent crosshair going outside boundary
+        if (rb.transform.position.x < minX){
+         rb.transform.position = new Vector3(minX, rb.transform.position.y, rb.transform.position.z);
+        } else if (rb.transform.position.x > maxX){
+         rb.transform.position = new Vector3(maxX, rb.transform.position.y, rb.transform.position.z);
+        } else if (rb.transform.position.y < minY){
+         rb.transform.position = new Vector3(rb.transform.position.x, minY, rb.transform.position.z);
+        } else if (rb.transform.position.y > maxY){
+         rb.transform.position = new Vector3(rb.transform.position.x, maxY, rb.transform.position.z);
         }
 
     }
