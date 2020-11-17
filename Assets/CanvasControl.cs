@@ -11,7 +11,7 @@ public class CanvasControl : MonoBehaviour
 
     public float speed;
 
-    // Start is called before the first frame update
+    // Start is called before the first frame
     void Start()
     {
         targetPosition = getRandomPosition();
