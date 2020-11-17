@@ -36,6 +36,7 @@ public class CreateLobby : MonoBehaviour
             GameState.setIscreater(1);
             GameState.setLobbyCode((string)result[1]);
             GameState.setUserName(username.text);
+            GameState.addUserMap(username.text,"testID");
             currentScene.SetActive(false);
             nextScene.SetActive(true);
             Debug.Log("Starting game");

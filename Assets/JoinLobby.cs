@@ -20,7 +20,10 @@ public class JoinLobby : MonoBehaviour
         foreach(var p in result) {
             if (index >=1){
                 List<object> listUserData = (List<object>) p;
-                Debug.Log((string)listUserData[1]);
+                //Debug.Log((string)listUserData[1]);
+                string uuid = (string)listUserData[0];
+                string uname = (string)listUserData[1];
+                GameState.addUserMap(uname,uuid);
                }
                index+=1;
         }
@@ -28,6 +31,7 @@ public class JoinLobby : MonoBehaviour
             Debug.Log("Player Joined");
             GameState.setIscreater(0);
             GameState.setLobbyCode(lobbyCode.text);
+            GameState.setUserName(username.text);
             currentScene.SetActive(false);
             nextScene.SetActive(true);
         }

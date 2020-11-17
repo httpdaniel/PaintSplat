@@ -315,7 +315,8 @@ private List<object> sendJoinLobbyData(Byte[] bytesSent) {
                UnityEngine.Debug.Log(playerUnameStr);
                UnityEngine.Debug.Log(playerNameLength);
                List <object> playerInfo = new List <object>();
-               playerInfo.Add(bytesRec);
+               string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+               playerInfo.Add(uuid);
                playerInfo.Add(playerUnameStr);
                result.Add(playerInfo);
            }
@@ -378,6 +379,81 @@ private List<object> sendJoinLobbyData(Byte[] bytesSent) {
         var bytesDataTosend = new byte[LengthOfArray];
         bytesDataTosend[0] = typeOfPacket;
         socket.Send(bytesDataTosend, bytesDataTosend.Length, 0);
+    }
+
+    public List<object> isThereNewUser(){
+        // int dataTypeToSend  = SocketConstants.SE_PLAYER_JOIN;
+       Byte[] bytesRec ;
+       int bytes = 0;
+       Byte[] playerUname;
+       int playerNameLength ;
+       int numIteration =1;
+       int packetNum = 0;
+       List <object> result = new List <object>();
+       int currentFlag = 0;
+       do
+       {
+           /*
+           Below is the logic to receive the data. We everytime recieve only one packet at a time.
+           First packet is always the state.
+           and the packets following are the values.
+           */
+           // UnityEngine.Debug.Log(packetNum);
+           if (packetNum == 0){
+                // accept only one byte now !
+                try
+                {
+                    bytesRec = new byte[4];
+                    bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                    // first packet is always int
+                    currentFlag = (int)bytesRec[0];
+                    UnityEngine.Debug.Log(currentFlag);
+                    if (currentFlag == SocketConstants.SE_PLAYER_JOIN || currentFlag == SocketConstants.SE_PLAYER_NAME_UPD || 
+                    currentFlag == SocketConstants.SE_PLAYER_LEFT )
+                    {
+                        numIteration +=1;
+                        
+                    }
+                }
+                catch (SocketException se) 
+                {  
+                    Console.WriteLine("SocketException : {0}",se.ToString());  
+                }
+                result.Add(currentFlag);
+           }
+           else{
+               // once flag is recieved update
+               if (currentFlag == SocketConstants.SE_PLAYER_NAME_UPD){
+                   // condition if the new player joins
+                    bytesRec = new byte[33];
+                    bytes = socket.Receive(bytesRec, 33, 0); // recieve one packet at a time
+                    string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+                    // UnityEngine.Debug.Log(bytesRec);
+                    playerNameLength = (int)bytesRec[32];
+                    playerUname = new byte[playerNameLength];
+                    bytes = socket.Receive(playerUname, playerNameLength, 0);
+                    var playerUnameStr = Encoding.UTF8.GetString(playerUname, 0, playerUname.Length);
+                    UnityEngine.Debug.Log(playerUnameStr);
+                    List <object> playerInfo = new List <object>();
+                    playerInfo.Add(uuid);
+                    playerInfo.Add(playerUnameStr);
+                    result.Add(playerInfo);
+               }
+               if (currentFlag == SocketConstants.SE_PLAYER_JOIN){
+                   // condition if the new player joins
+                    bytesRec = new byte[32];
+                    bytes = socket.Receive(bytesRec, 32, 0); // recieve one packet at a time
+                    // UnityEngine.Debug.Log(bytesRec);
+                    string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+                    List <object> playerInfo = new List <object>();
+                    playerInfo.Add(uuid);
+                    result.Add(playerInfo);
+               }
+           }
+           packetNum += 1;
+       }
+       while (packetNum < numIteration);
+       return result;
     }
 
     public static void Main(string[] args)

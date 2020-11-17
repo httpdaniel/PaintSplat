@@ -23,5 +23,8 @@ public class SocketConstants
     public static int SE_PAINT_HIT_OK     = 12;//# Server confirms paintball hit
     public static int SE_PAINT_HIT_FAIL   = 13;//# Server denies paintball hit
     public static int SE_PAINT_BALL_SYNC  = 14;//# Sent by the server when other player hit the canvas
+    public static int SE_PLAYER_LEFT      = 15;//# Sent by the server when a player leaves the game
+    public static int SE_PLAYER_NAME_UPD  = 16;//# Sent by the server when a player updates name
+    public static int SE_GAME_OVER        = 17;//# Sent by the server when the game finishes
 
 }
