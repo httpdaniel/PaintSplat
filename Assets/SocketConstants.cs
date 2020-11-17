@@ -26,5 +26,6 @@ public class SocketConstants
     public static int SE_PLAYER_LEFT      = 15;//# Sent by the server when a player leaves the game
     public static int SE_PLAYER_NAME_UPD  = 16;//# Sent by the server when a player updates name
     public static int SE_GAME_OVER        = 17;//# Sent by the server when the game finishes
+    public static int SE_GAME_START       = 18;//# Sent by the server when game starts
 
 }

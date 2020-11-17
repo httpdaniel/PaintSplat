@@ -240,7 +240,7 @@ public class GetSocket
             if (packetNum == 0){
                 Byte[] bytesRec = new byte[4];
                 bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
-                int flagNum = BitConverter.ToInt32(bytesRec, 0);
+                int flagNum = (int)bytesRec[0];
                 UnityEngine.Debug.Log(flagNum);
                 result.Add(flagNum);
             }
@@ -409,7 +409,7 @@ private List<object> sendJoinLobbyData(Byte[] bytesSent) {
                     currentFlag = (int)bytesRec[0];
                     UnityEngine.Debug.Log(currentFlag);
                     if (currentFlag == SocketConstants.SE_PLAYER_JOIN || currentFlag == SocketConstants.SE_PLAYER_NAME_UPD || 
-                    currentFlag == SocketConstants.SE_PLAYER_LEFT )
+                    currentFlag == SocketConstants.SE_GAME_START )
                     {
                         numIteration +=1;
                         

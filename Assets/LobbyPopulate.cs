@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
-
+using UnityEngine.SceneManagement;
+using System.Threading;
 public class LobbyPopulate : MonoBehaviour
 {
     public TMP_Text lobbyCode;
@@ -44,7 +45,6 @@ public class LobbyPopulate : MonoBehaviour
     }
     public void onclickStart(){
         socketObj.startPainting();
-
     }
     // Update is called once per frame
     void Update()
@@ -74,7 +74,7 @@ public class LobbyPopulate : MonoBehaviour
                 string uuid = (string)listUserData[0];
                 string uname = (string)listUserData[1];
                 Debug.Log(uname);
-                GameState.addUserMap(uname,uuid);
+                GameState.updateaddUserMap(uname,uuid);
                 // userObjectMaps
                 // GameObject lobbyMemTemplate = transform.GetChild(0).gameObject;
                 // GameObject g;
@@ -88,6 +88,10 @@ public class LobbyPopulate : MonoBehaviour
                     }   
                 }
                 // Destroy(lobbyMemTemplate);   
+            }
+            if (recievedPacket == SocketConstants.SE_GAME_START){
+                Thread.Sleep(2000);
+                SceneManager.LoadScene("SampleScene");
             }
         }
         
