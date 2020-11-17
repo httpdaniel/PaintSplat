@@ -143,6 +143,39 @@ public class GetSocket
             return resultLobbyFound;
     }
 
+    public void sendHitRequest(float crossx, float crossy, float canx, float cany)
+    {
+        // function is used to send Crosshair and Canvas cordinates on fire button
+        Console.WriteLine("Sending Crosshair and Canvas cordinates on fire button");
+        int dataTypeToSend = SocketConstants.CL_PAINT_HIT_REQ;
+        int LengthOfArray = 5;
+        Byte[] bytesDataTosend = new byte[LengthOfArray];
+        bytesDataTosend[0] = (byte)dataTypeToSend;
+        bytesDataTosend[1] = (byte)crossx;
+        bytesDataTosend[2] = (byte)crossy;
+        bytesDataTosend[3] = (byte)canx;
+        bytesDataTosend[4] = (byte)cany;
+
+        Console.WriteLine("Sending the data to server");
+
+        socket.Send(bytesDataTosend, bytesDataTosend.Length, 0);
+        //Console.WriteLine("Received the data from server for hit request");
+        //List<int> lobbyInfo = (List<int>)resultLobbyFound[0];
+        //int statusLobbyFound = (int)lobbyInfo[0];
+       // if (statusLobbyFound == SocketConstants.SE_ROOM_OK)
+        //{
+       //     // send username and join game.
+       //     UnityEngine.Debug.Log("Send the user data");
+      //     // sendUserName(userName);
+       // }
+        //return hitReq;
+    }
+
+    public List<object> receiveScore()
+    {
+        return null;
+    }
+
     public List<object> recieveInPlayerInformation(){
         //SE_PLAYER_JOIN
         int packetNum = 0;
