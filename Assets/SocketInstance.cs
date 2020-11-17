@@ -273,7 +273,8 @@ public class GetSocket
             if (packetNum == 0){
                 Byte[] bytesRec = new byte[4];
                 bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
-                int flagNum = BitConverter.ToInt32(bytesRec, 0);
+                int flagNum = (int)bytesRec[0];
+                UnityEngine.Debug.Log(flagNum);
                 result.Add(flagNum);
             }
             else{
@@ -289,89 +290,76 @@ public class GetSocket
         return result;
     }
 
-
-    private List<object> sendJoinLobbyData(Byte[] bytesSent) {
-        /*
-         this is the helper method to send the data over to the server and the port.
-         the answer to the request will be stored in the bytesRec and bytesSend are the bytes that needs to be sent to the server
-        */
-        /*
-        9|max_players|game_length|splash_size|number_of_players|[uuid[32]|name_length|name[name_length]]
-        player = 
-        
-        */
-        socket.Send(bytesSent, bytesSent.Length, 0);
-        // Thread.Sleep(2000);
-        UnityEngine.Debug.Log("Send the daata");
-        List<object> result = new List<object>();
-        int bytes = 0;
-        int packetNum = 0;
-        Byte[] bytesRec ;
-        Byte[] playerUname;
-        int playerNameLength ;
-        int numPlayersInLobby =0;
-        List <int> gameInfo = new List <int>();
-        do
-        {
-            /*
-            Below is the logic to receive the data. We everytime recieve only one packet at a time.
-            First packet is always the state.
-            and the packets following are the values.
-            */
-            // UnityEngine.Debug.Log(packetNum);
-            if (packetNum < 5){
-                bytesRec = new byte[1];
-                bytes = socket.Receive(bytesRec, 1, 0); // recieve one packet at a time
-                // UnityEngine.Debug.Log("Getting user info2");
-                int intDataRec = (int)bytesRec[0];
-                gameInfo.Add(intDataRec);
-                if (packetNum == 4){
-                    numPlayersInLobby = intDataRec;
-                    UnityEngine.Debug.Log(numPlayersInLobby);
-                }
-                // int flagNum = (int)bytesRec[0];
-                // int maxPlayers = (int)bytesRec[1];
-                // int gameLength = (int)bytesRec[2];
-                // int splashSize = (int)bytesRec[3];
-                // numPlayersInLobby = (int)bytesRec[4];
-                // foreach(var p in bytesRec) {
-            
-                //         UnityEngine.Debug.Log(p);
+private List<object> sendJoinLobbyData(Byte[] bytesSent) {
+       /*
+        this is the helper method to send the data over to the server and the port.
+        the answer to the request will be stored in the bytesRec and bytesSend are the bytes that needs to be sent to the server
+       */
+       /*
+       9|max_players|game_length|splash_size|number_of_players|[uuid[32]|name_length|name[name_length]]
+       player =
+      
+       */
+       socket.Send(bytesSent, bytesSent.Length, 0);
+       // Thread.Sleep(2000);
+       UnityEngine.Debug.Log("Send the daata");
+       List<object> result = new List<object>();
+       int bytes = 0;
+       int packetNum = 0;
+       Byte[] bytesRec ;
+       Byte[] playerUname;
+       int playerNameLength ;
+       int numPlayersInLobby =6;
+       List <int> gameInfo = new List <int>();
+       do
+       {
+           /*
+           Below is the logic to receive the data. We everytime recieve only one packet at a time.
+           First packet is always the state.
+           and the packets following are the values.
+           */
+           // UnityEngine.Debug.Log(packetNum);
+           if (packetNum < 6){
+               bytesRec = new byte[1];
+               bytes = socket.Receive(bytesRec, 1, 0); // recieve one packet at a time
                
-                //     }
-                
-                // gameInfo.Add(flagNum);
-                // gameInfo.Add(maxPlayers);
-                // gameInfo.Add(gameLength);
-                // gameInfo.Add(splashSize);
-                // gameInfo.Add(numPlayersInLobby);
-                // result.Add(gameInfo);
-            }
-            else{
-                result.Add(gameInfo);
-                UnityEngine.Debug.Log("Getting user info");
-                // numPlayersInLobby = gameInfo[4];
-                // recieve each playerInfo
-                bytesRec = new byte[33];
-                bytes = socket.Receive(bytesRec, 33, 0); // recieve one packet at a time
-                // UnityEngine.Debug.Log(bytesRec);
-                playerNameLength = (int)bytesRec[32];
-                playerUname = new byte[playerNameLength];
-                bytes = socket.Receive(playerUname, playerNameLength, 0);
-                var playerUnameStr = Encoding.UTF8.GetString(playerUname, 0, playerUname.Length);
-                // UnityEngine.Debug.Log(playerUnameStr);
-                // UnityEngine.Debug.Log(playerNameLength);
-                List <object> playerInfo = new List <object>();
-                playerInfo.Add(bytesRec);
-                playerInfo.Add(playerUnameStr);
-                result.Add(playerInfo);
-            }
-            packetNum += 1;
-        }
-        while (packetNum < numPlayersInLobby +4);
-        
-        return result;
-    }
+               int intDataRec = (int)bytesRec[0];
+               UnityEngine.Debug.Log(intDataRec);
+               gameInfo.Add(intDataRec);
+               if (packetNum == 5){
+                   
+                   result.Add(gameInfo);
+                   UnityEngine.Debug.Log(intDataRec);
+                   numPlayersInLobby += intDataRec;
+               }
+           }
+           else{
+               
+               UnityEngine.Debug.Log("Getting user info");
+               // numPlayersInLobby = gameInfo[4];
+               // recieve each playerInfo
+               bytesRec = new byte[33];
+               bytes = socket.Receive(bytesRec, 33, 0); // recieve one packet at a time
+               // UnityEngine.Debug.Log(bytesRec);
+               playerNameLength = (int)bytesRec[32];
+               playerUname = new byte[playerNameLength];
+               bytes = socket.Receive(playerUname, playerNameLength, 0);
+               var playerUnameStr = Encoding.UTF8.GetString(playerUname, 0, playerUname.Length);
+               UnityEngine.Debug.Log(playerUnameStr);
+               UnityEngine.Debug.Log(playerNameLength);
+               List <object> playerInfo = new List <object>();
+               string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+               playerInfo.Add(uuid);
+               playerInfo.Add(playerUnameStr);
+               result.Add(playerInfo);
+           }
+           packetNum += 1;
+       }
+       while (packetNum < numPlayersInLobby);
+      
+       return result;
+   }
+
 
 
     private List<object> sendData(Byte[] bytesSent) {
@@ -424,6 +412,81 @@ public class GetSocket
         var bytesDataTosend = new byte[LengthOfArray];
         bytesDataTosend[0] = typeOfPacket;
         socket.Send(bytesDataTosend, bytesDataTosend.Length, 0);
+    }
+
+    public List<object> isThereNewUser(){
+        // int dataTypeToSend  = SocketConstants.SE_PLAYER_JOIN;
+       Byte[] bytesRec ;
+       int bytes = 0;
+       Byte[] playerUname;
+       int playerNameLength ;
+       int numIteration =1;
+       int packetNum = 0;
+       List <object> result = new List <object>();
+       int currentFlag = 0;
+       do
+       {
+           /*
+           Below is the logic to receive the data. We everytime recieve only one packet at a time.
+           First packet is always the state.
+           and the packets following are the values.
+           */
+           // UnityEngine.Debug.Log(packetNum);
+           if (packetNum == 0){
+                // accept only one byte now !
+                try
+                {
+                    bytesRec = new byte[4];
+                    bytes = socket.Receive(bytesRec, 4, 0); // recieve one packet at a time
+                    // first packet is always int
+                    currentFlag = (int)bytesRec[0];
+                    UnityEngine.Debug.Log(currentFlag);
+                    if (currentFlag == SocketConstants.SE_PLAYER_JOIN || currentFlag == SocketConstants.SE_PLAYER_NAME_UPD || 
+                    currentFlag == SocketConstants.SE_GAME_START )
+                    {
+                        numIteration +=1;
+                        
+                    }
+                }
+                catch (SocketException se) 
+                {  
+                    Console.WriteLine("SocketException : {0}",se.ToString());  
+                }
+                result.Add(currentFlag);
+           }
+           else{
+               // once flag is recieved update
+               if (currentFlag == SocketConstants.SE_PLAYER_NAME_UPD){
+                   // condition if the new player joins
+                    bytesRec = new byte[33];
+                    bytes = socket.Receive(bytesRec, 33, 0); // recieve one packet at a time
+                    string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+                    // UnityEngine.Debug.Log(bytesRec);
+                    playerNameLength = (int)bytesRec[32];
+                    playerUname = new byte[playerNameLength];
+                    bytes = socket.Receive(playerUname, playerNameLength, 0);
+                    var playerUnameStr = Encoding.UTF8.GetString(playerUname, 0, playerUname.Length);
+                    UnityEngine.Debug.Log(playerUnameStr);
+                    List <object> playerInfo = new List <object>();
+                    playerInfo.Add(uuid);
+                    playerInfo.Add(playerUnameStr);
+                    result.Add(playerInfo);
+               }
+               if (currentFlag == SocketConstants.SE_PLAYER_JOIN){
+                   // condition if the new player joins
+                    bytesRec = new byte[32];
+                    bytes = socket.Receive(bytesRec, 32, 0); // recieve one packet at a time
+                    // UnityEngine.Debug.Log(bytesRec);
+                    string uuid = BitConverter.ToString(bytesRec).Replace("-","");
+                    List <object> playerInfo = new List <object>();
+                    playerInfo.Add(uuid);
+                    result.Add(playerInfo);
+               }
+           }
+           packetNum += 1;
+       }
+       while (packetNum < numIteration);
+       return result;
     }
 
     public static void Main(string[] args)

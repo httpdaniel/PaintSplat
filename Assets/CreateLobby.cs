@@ -25,9 +25,9 @@ public class CreateLobby : MonoBehaviour
         int success = (int)result[0];
         // int success = SocketConstants.SE_ROOM_CODE;
         int acceptCode = SocketConstants.SE_ROOM_CODE;
-        Debug.Log(acceptCode);
+        Debug.Log(success);
         //bool status = true; // take this variable from the server
-        if (success == SocketConstants.SE_ROOM_OK)
+        if (success == SocketConstants.SE_ROOM_CODE)
         {
             Debug.Log("Got the success");
             //Debug.Log("User name"+username.text);
@@ -36,6 +36,7 @@ public class CreateLobby : MonoBehaviour
             GameState.setIscreater(1);
             GameState.setLobbyCode((string)result[1]);
             GameState.setUserName(username.text);
+            GameState.addUserMap(username.text,"testID");
             currentScene.SetActive(false);
             nextScene.SetActive(true);
             Debug.Log("Starting game");
