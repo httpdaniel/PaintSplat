@@ -597,6 +597,7 @@ MonoBehaviour:
   scoreText: {fileID: 980434610}
   pfSplat: {fileID: 6496784737062570155, guid: 4aa258379f21345c3abb4dd265548ad1, type: 3}
   rb: {fileID: 1824933368}
+  canvas: {fileID: 728434050}
 --- !u!1 &980434608
 GameObject:
   m_ObjectHideFlags: 0
