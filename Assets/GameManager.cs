@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,7 +9,10 @@ public class GameManager : MonoBehaviour
     public GameObject endScreen;
 
     void Start() {
+        // Set name to blank
         winnerName.text = "";
+
+        // Hide end screen
         endScreen.SetActive(false);
     }
     //public Text playerName;
@@ -26,5 +30,15 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game Over");
         // change text to winner
         endScreen.SetActive(true);
+    }
+
+    public void Restart() {
+        // restart the game
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Quit() {
+        // quit the game
+        Application.Quit();
     }
 }
