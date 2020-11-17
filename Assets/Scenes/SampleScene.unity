@@ -1123,7 +1123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1569136723
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1291,6 +1291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961f7fa28b5bb48ae9be520a28a89e53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  winnerName: {fileID: 1512720480}
+  endScreen: {fileID: 1569136722}
 --- !u!4 &1785342381
 Transform:
   m_ObjectHideFlags: 0
