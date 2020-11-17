@@ -37,6 +37,24 @@ public static class GameState
     public static UserObjects getUobject(String uname){
         return userObjectMaps[uname];
     }
+
+    public static UserObjects getWinner(){
+        int index = 0;
+        UserObjects uObj = null;
+        foreach(var userObj in GameState.userObjectMaps)
+        {    
+            if (index == 0){
+                uObj = userObj.Value;
+            }
+            else{
+                if (uObj.getPoints() < userObj.Value.getPoints()){
+                    uObj = userObj.Value;
+                }
+            }
+        }
+        return uObj;
+    }
+
     public static void updateaddUserMap(String uname,string uuid){
         // UserObjects uObj = new UserObjects(uname,uuid);
         int dataFound = 0;
@@ -53,5 +71,14 @@ public static class GameState
             userObjectMaps.Add(uname,uObj); 
         }
 
+    }
+
+    public static void updateHit(String uuid){
+        foreach(var userObj in GameState.userObjectMaps)
+        {    
+            if (userObj.Value.getuuid() == uuid){
+                userObj.Value.updateHitPoints(1);
+            }
+        }
     }
 }

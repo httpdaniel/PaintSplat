@@ -25,10 +25,12 @@ public class GameManager : MonoBehaviour
         //winnerName.text = name;
     }
 
-    void endGame()
+    public void endGame() // try this might not work!
     {
         Debug.Log("Game Over");
         // change text to winner
+        UserObjects winnerObj = GameState.getWinner();
+        winnerName.text = winnerObj.getname();
         endScreen.SetActive(true);
     }
 
