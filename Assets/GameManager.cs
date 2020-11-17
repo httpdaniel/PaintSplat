@@ -2,7 +2,7 @@
 
 public class GameManager : MonoBehaviour
 {
-    public Text playerName;
+    //public Text playerName;
 
     void endGame()
     {
