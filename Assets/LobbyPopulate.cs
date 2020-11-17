@@ -37,10 +37,11 @@ public class LobbyPopulate : MonoBehaviour
     }
     public void onclickStart(){
         socketObj.startPainting();
+
     }
     // Update is called once per frame
     // void Update()
     // {
-        
+    //     pass;
     // }
 }
